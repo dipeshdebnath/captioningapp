@@ -5,6 +5,11 @@ from app.captioner import generate_caption
 
 app = FastAPI()
 
+
+@app.get("/")
+def read_root():
+    return {"Hello": "I am Captionapp"}
+
 @app.post("/caption")
 async def caption_image(file: UploadFile = File(...)):
     # Load image from upload
