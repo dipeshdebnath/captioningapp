@@ -1,17 +1,16 @@
 from fastapi import FastAPI, UploadFile, File
+from PIL import Image
+import io
 from app.captioner import generate_caption
-from app.enhancer import enhance_caption
-from app.utils import load_image
 
 app = FastAPI()
 
 @app.post("/caption")
-async def caption_endpoint(file: UploadFile = File(...)):
+async def caption_image(file: UploadFile = File(...)):
+    # Load image from upload
     image_bytes = await file.read()
-    image = load_image(image_bytes)
-    raw_caption = generate_caption(image)
-    enhanced = enhance_caption(raw_caption)
-    return {
-        "raw_caption": raw_caption,
-        "enhanced_caption": enhanced
-    }
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+    # Generate caption
+    caption = generate_caption(image)
+    return {"caption": caption}
