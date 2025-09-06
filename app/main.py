@@ -1,21 +1,26 @@
+import os
 from fastapi import FastAPI, UploadFile, File
-from PIL import Image
-import io
-from app.captioner import generate_caption
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-
 @app.get("/")
 def read_root():
-    return {"Hello": "I am Captionapp"}
+    return {"message": "Welcome to Dipesh's Creator API 🚀"}
 
 @app.post("/caption")
-async def caption_image(file: UploadFile = File(...)):
-    # Load image from upload
-    image_bytes = await file.read()
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+async def generate_caption(file: UploadFile = File(...)):
+    # Placeholder logic — replace with actual model inference
+    filename = file.filename
+    content = await file.read()
+    size_kb = round(len(content) / 1024, 2)
 
-    # Generate caption
-    caption = generate_caption(image)
-    return {"caption": caption}
+    # Simulated caption
+    caption = f"This image ({filename}, {size_kb} KB) looks stunning. ✨"
+
+    return JSONResponse(content={"caption": caption})
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
